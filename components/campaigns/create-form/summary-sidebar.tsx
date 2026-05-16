@@ -2,6 +2,7 @@
 
 import { AlertTriangle } from "lucide-react";
 import { useStore } from "@/lib/store";
+import { getPathLabel } from "@/lib/utils";
 import type { DraftCampaign } from "@/lib/types";
 
 function MiniFlowSvg() {
@@ -108,10 +109,12 @@ type Warning = { message: string };
 
 function computeWarnings(draft: DraftCampaign): Warning[] {
   const warnings: Warning[] = [];
+  const pathCount = draft.paths.length;
   draft.paths.forEach((path, i) => {
     const offerSlot = path.slots.find((s) => s.kind === "offer");
     if (!offerSlot || offerSlot.items.length === 0) {
-      warnings.push({ message: `Path ${i + 1} has no offer configured` });
+      const label = getPathLabel(i, pathCount, draft.splitMode);
+      warnings.push({ message: `${label} has no offer configured` });
     }
   });
   if (!draft.trafficSourceId) {

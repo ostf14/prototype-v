@@ -8,7 +8,7 @@ import {
   PathWeight,
   ConditionGate,
 } from "@/components/destination-canvas/weight-controls";
-import { cn } from "@/lib/utils";
+import { cn, getPathLabel } from "@/lib/utils";
 import type { Path } from "@/lib/types";
 
 type PathRowProps = {
@@ -55,7 +55,9 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
           In rule-based mode the priority number lives inside ConditionGate. */}
       {!isRuleBased && (
         <div className="w-20 shrink-0 self-center">
-          <span className="text-xs text-text-subtle">Path {index + 1}</span>
+          <span className="text-xs text-text-subtle">
+            {getPathLabel(index, pathCount, splitMode)}
+          </span>
           {path.name && (
             <p className="text-xs text-text-muted truncate">{path.name}</p>
           )}

@@ -1,8 +1,26 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { SplitMode } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+// Single source of truth for how a path is referred to in the UI.
+// Used both by path-row (canvas label) and the validator (issue messages)
+// so the visible label and error text stay in sync.
+// In rule-based mode the last path is the fallback — shown as "ELSE path",
+// not as a numeric "Path N". Other paths use their priority number, which
+// equals (index + 1) since path order = priority order.
+export function getPathLabel(
+  index: number,
+  pathCount: number,
+  splitMode: SplitMode
+): string {
+  if (splitMode.kind === "rule-based" && index === pathCount - 1) {
+    return "ELSE path";
+  }
+  return `Path ${index + 1}`;
 }
 
 export function formatNumber(n: number): string {
