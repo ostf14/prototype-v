@@ -36,46 +36,51 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
-      className="flex items-start gap-3 group"
+      className="flex items-start group"
     >
-      {/* Drag handle: visible for all non-ELSE paths when multi-path.
-          In rule-based mode dragging changes priority order. */}
-      {pathCount > 1 && !isFallback && (
-        <div
-          className="self-center cursor-grab text-text-subtle/40 group-hover:text-text-subtle transition-colors"
-          title={isRuleBased ? "Drag to change priority" : undefined}
-        >
-          <GripVertical size={14} />
-        </div>
-      )}
-      {/* Spacer keeps flow aligned on the non-draggable ELSE row */}
-      {pathCount > 1 && isFallback && <div className="w-3.5 shrink-0" />}
+      {/* STICKY LEFT — drag handle + (path label OR condition gate).
+          Stays put while the slot track scrolls horizontally underneath.
+          bg-bg matches the Section body so scrolling content is hidden. */}
+      <div className="sticky left-0 z-10 bg-bg flex items-start gap-3 pr-4 shrink-0">
+        {/* Drag handle: visible for all non-ELSE paths when multi-path.
+            In rule-based mode dragging changes priority order. */}
+        {pathCount > 1 && !isFallback && (
+          <div
+            className="self-center cursor-grab text-text-subtle/40 group-hover:text-text-subtle transition-colors"
+            title={isRuleBased ? "Drag to change priority" : undefined}
+          >
+            <GripVertical size={14} />
+          </div>
+        )}
+        {/* Spacer keeps flow aligned on the non-draggable ELSE row */}
+        {pathCount > 1 && isFallback && <div className="w-3.5 shrink-0" />}
 
-      {/* Left label: "Path N" in weighted/ai mode.
-          In rule-based mode the priority number lives inside ConditionGate. */}
-      {!isRuleBased && (
-        <div className="w-20 shrink-0 self-center">
-          <span className="text-xs text-text-subtle">
-            {getPathLabel(index, pathCount, splitMode)}
-          </span>
-          {path.name && (
-            <p className="text-xs text-text-muted truncate">{path.name}</p>
-          )}
-        </div>
-      )}
+        {/* Left label: "Path N" in weighted/ai mode.
+            In rule-based mode the priority number lives inside ConditionGate. */}
+        {!isRuleBased && (
+          <div className="w-20 shrink-0 self-center">
+            <span className="text-xs text-text-subtle">
+              {getPathLabel(index, pathCount, splitMode)}
+            </span>
+            {path.name && (
+              <p className="text-xs text-text-muted truncate">{path.name}</p>
+            )}
+          </div>
+        )}
 
-      {/* Condition gate (rule-based mode only, left of slot flow) */}
-      {isRuleBased && (
-        <ConditionGate
-          pathId={path.id}
-          pathIndex={index}
-          pathCount={pathCount}
-        />
-      )}
+        {/* Condition gate (rule-based mode only, left of slot flow) */}
+        {isRuleBased && (
+          <ConditionGate
+            pathId={path.id}
+            pathIndex={index}
+            pathCount={pathCount}
+          />
+        )}
+      </div>
 
-      {/* Slot flow — items-start so the arrow pins to the top edge of
-          the lander stack without requiring a hardcoded height offset */}
-      <div className="flex items-start gap-2 flex-1">
+      {/* SCROLLABLE — slot flow. items-start so the arrow pins to the
+          top edge of the lander stack without a hardcoded height offset. */}
+      <div className="flex items-start gap-2">
         {hasLander && landerSlot && (
           <>
             <SlotCard pathId={path.id} slot={landerSlot} showRemoveItem />
@@ -104,9 +109,10 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
         )}
       </div>
 
-      {/* Weight: weighted and ai modes only (rule-based uses ConditionGate) */}
+      {/* Weight: weighted and ai modes only (rule-based uses ConditionGate).
+          Scrolls together with the slot flow. */}
       {!isRuleBased && (
-        <div className="shrink-0 min-w-24 self-center">
+        <div className="ml-3 shrink-0 min-w-24 self-center">
           <PathWeight
             pathId={path.id}
             pathIndex={index}
@@ -119,7 +125,7 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
       {showRemove && !isFallback && (
         <button
           onClick={() => removePath(path.id)}
-          className="self-start mt-1 opacity-0 group-hover:opacity-100 text-text-subtle hover:text-danger transition-all"
+          className="ml-2 self-start mt-1 opacity-0 group-hover:opacity-100 text-text-subtle hover:text-danger transition-all"
           title="Remove path"
         >
           <X size={13} />

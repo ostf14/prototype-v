@@ -106,34 +106,44 @@ export function FlowCanvas() {
 
   return (
     <>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 pt-4">
+        {/* Distribution + AI config bars stay full-width above the rows */}
         {paths.length >= 2 && (
-          <>
+          <div className="px-4 flex flex-col gap-3">
             <WeightBar />
             <AiModeConfig />
-          </>
+          </div>
         )}
 
-        <AnimatePresence mode="popLayout">
-          {paths.map((path, index) => (
-            <PathRow
-              key={path.id}
-              path={path}
-              index={index}
-              pathCount={paths.length}
-              showRemove={paths.length > 1}
-            />
-          ))}
-        </AnimatePresence>
+        {/* Single shared horizontal-scroll container.
+            All path rows scroll in sync (they share scrollLeft because
+            they live inside the same overflow:x element), so the slot
+            columns stay vertically aligned across paths.
+            Sticky left columns inside each PathRow remain visible. */}
+        <div className="overflow-x-auto pb-4">
+          <div className="flex flex-col gap-3 px-4 min-w-fit">
+            <AnimatePresence mode="popLayout">
+              {paths.map((path, index) => (
+                <PathRow
+                  key={path.id}
+                  path={path}
+                  index={index}
+                  pathCount={paths.length}
+                  showRemove={paths.length > 1}
+                />
+              ))}
+            </AnimatePresence>
 
-        {/* Add path */}
-        <button
-          onClick={addPath}
-          className="flex items-center gap-1.5 self-start rounded-md border border-dashed border-border px-3 py-1.5 text-xs text-text-subtle hover:border-border-strong hover:text-text-muted transition-colors"
-        >
-          <Plus size={11} />
-          Add path
-        </button>
+            {/* Add path */}
+            <button
+              onClick={addPath}
+              className="flex items-center gap-1.5 self-start rounded-md border border-dashed border-border px-3 py-1.5 text-xs text-text-subtle hover:border-border-strong hover:text-text-muted transition-colors"
+            >
+              <Plus size={11} />
+              Add path
+            </button>
+          </div>
+        </div>
       </div>
       <SlotPicker />
     </>
