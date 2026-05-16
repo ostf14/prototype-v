@@ -28,7 +28,10 @@ const OPERATORS = [
   { value: "contains", label: "contains" },
 ] as const;
 
-function ConditionChip({
+// Left-side gate for rule-based mode.
+// ELSE (last path): read-only, no drag, not part of priority ordering.
+// All other paths: show WHEN label + conditions + add-condition popover.
+export function ConditionGate({
   pathId,
   pathIndex,
   pathCount,
@@ -39,46 +42,81 @@ function ConditionChip({
 }) {
   const { draft, addRule } = useStore();
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [field, setField] = useState<"country" | "device" | "os" | "browser" | "connection" | "time">("country");
-  const [operator, setOperator] = useState<"is" | "is-not" | "in" | "contains">("is");
+  const [field, setField] =
+    useState<"country" | "device" | "os" | "browser" | "connection" | "time">(
+      "country"
+    );
+  const [operator, setOperator] =
+    useState<"is" | "is-not" | "in" | "contains">("is");
   const [value, setValue] = useState("");
 
   const isFallback = pathIndex === pathCount - 1;
-  const splitMode = draft.splitMode;
-  const rules = splitMode.kind === "rule-based" ? splitMode.rules : [];
+  const rules =
+    draft.splitMode.kind === "rule-based" ? draft.splitMode.rules : [];
   const pathRules = rules.find((r) => r.pathId === pathId);
 
+  // ELSE row: fixed, non-editable
   if (isFallback) {
     return (
-      <span className="rounded-md border border-border px-2.5 py-1 text-xs text-text-subtle">
-        Fallback (catch-all)
-      </span>
+      <div className="shrink-0 w-44 flex flex-col gap-1">
+        <div className="flex items-center gap-1.5">
+          <span className="rounded border border-border px-1.5 py-0.5 font-mono text-xs text-text-subtle">
+            ELSE
+          </span>
+          <span className="text-xs text-text-subtle">all other traffic</span>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="relative flex items-center gap-1.5 flex-wrap">
-      {pathRules?.conditions.map((cond, i) => (
-        <span
-          key={i}
-          className="rounded-md bg-surface-2 border border-border px-2.5 py-1 text-xs text-text-muted"
-        >
-          {cond.field} {cond.operator} {Array.isArray(cond.value) ? cond.value.join(", ") : cond.value}
+    <div className="relative shrink-0 w-44 flex flex-col gap-1">
+      {/* Priority number + WHEN pill */}
+      <div className="flex items-center gap-1.5">
+        <span className="w-4 text-center font-mono text-xs text-text-subtle">
+          {pathIndex + 1}
         </span>
-      ))}
-      <button
-        onClick={() => setPopoverOpen((p) => !p)}
-        className="flex items-center gap-1 rounded-md border border-dashed border-border px-2 py-1 text-xs text-text-subtle hover:border-border-strong hover:text-text-muted transition-colors"
-      >
-        <Plus size={10} />
-        <span>Add condition</span>
-      </button>
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-xs text-text-muted">
+          WHEN
+        </span>
+      </div>
+
+      {/* Existing conditions */}
+      <div className="flex flex-col gap-1 pl-5">
+        {pathRules?.conditions.map((cond, i) => (
+          <span
+            key={i}
+            className="rounded bg-surface-2 border border-border px-2 py-0.5 text-xs text-text-muted"
+          >
+            {cond.field} {cond.operator}{" "}
+            {Array.isArray(cond.value)
+              ? cond.value.join(", ")
+              : cond.value}
+          </span>
+        ))}
+
+        {/* Add condition trigger */}
+        <button
+          onClick={() => setPopoverOpen((p) => !p)}
+          className="flex items-center gap-1 rounded border border-dashed border-border px-2 py-0.5 text-xs text-text-subtle hover:border-border-strong hover:text-text-muted transition-colors w-fit"
+        >
+          <Plus size={10} />
+          Add condition
+        </button>
+      </div>
+
+      {/* Condition builder popover */}
       {popoverOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setPopoverOpen(false)} />
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setPopoverOpen(false)}
+          />
           <div className="absolute top-full left-0 mt-1 z-50 w-72 rounded-md border border-border bg-surface-2 p-3 shadow-lg">
             <div className="flex flex-col gap-2">
-              <div className="text-xs font-medium text-text-subtle">Add condition</div>
+              <div className="text-xs font-medium text-text-subtle">
+                Add condition
+              </div>
               <div className="flex gap-2">
                 <select
                   value={field}
@@ -86,16 +124,22 @@ function ConditionChip({
                   className="flex-1 rounded border border-border bg-surface px-2 py-1.5 text-xs text-text"
                 >
                   {CONDITION_FIELDS.map((f) => (
-                    <option key={f.value} value={f.value}>{f.label}</option>
+                    <option key={f.value} value={f.value}>
+                      {f.label}
+                    </option>
                   ))}
                 </select>
                 <select
                   value={operator}
-                  onChange={(e) => setOperator(e.target.value as typeof operator)}
+                  onChange={(e) =>
+                    setOperator(e.target.value as typeof operator)
+                  }
                   className="w-24 rounded border border-border bg-surface px-2 py-1.5 text-xs text-text"
                 >
                   {OPERATORS.map((op) => (
-                    <option key={op.value} value={op.value}>{op.label}</option>
+                    <option key={op.value} value={op.value}>
+                      {op.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -115,7 +159,10 @@ function ConditionChip({
                 <button
                   onClick={() => {
                     if (!value.trim()) return;
-                    const vals = value.split(",").map((v) => v.trim()).filter(Boolean);
+                    const vals = value
+                      .split(",")
+                      .map((v) => v.trim())
+                      .filter(Boolean);
                     addRule(pathId, {
                       field,
                       operator,
@@ -155,7 +202,8 @@ export function WeightBar() {
   return (
     <div className="flex items-center justify-between px-3 py-2 rounded-md border border-border bg-surface mb-2">
       <span className="text-xs text-text-muted">
-        Distribution: <span className="text-text font-medium">{distributionLabel}</span>
+        Distribution:{" "}
+        <span className="text-text font-medium">{distributionLabel}</span>
         {splitMode.kind === "weighted" && totalWeight !== 100 && (
           <span className="ml-1.5 text-warning text-xs">≠ 100%</span>
         )}
@@ -166,20 +214,31 @@ export function WeightBar() {
           onClick={() => setDropdownOpen((p) => !p)}
           className="flex items-center gap-1.5 rounded border border-border px-2.5 py-1 text-xs text-text-muted hover:bg-surface-2 hover:text-text transition-colors"
         >
-          {SPLIT_MODE_OPTIONS.find((o) => o.value === splitMode.kind)?.label ?? "Weighted"}
+          {SPLIT_MODE_OPTIONS.find((o) => o.value === splitMode.kind)?.label ??
+            "Weighted"}
           <ChevronDown size={11} />
         </button>
         {dropdownOpen && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setDropdownOpen(false)}
+            />
             <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-md border border-border bg-surface-2 py-1 shadow-lg">
               {SPLIT_MODE_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => {
-                    if (opt.value === "weighted") setSplitMode({ kind: "weighted" });
-                    else if (opt.value === "rule-based") setSplitMode({ kind: "rule-based", rules: [] });
-                    else setSplitMode({ kind: "ai", goal: "epc", minSample: 1000 });
+                    if (opt.value === "weighted")
+                      setSplitMode({ kind: "weighted" });
+                    else if (opt.value === "rule-based")
+                      setSplitMode({ kind: "rule-based", rules: [] });
+                    else
+                      setSplitMode({
+                        kind: "ai",
+                        goal: "epc",
+                        minSample: 1000,
+                      });
                     setDropdownOpen(false);
                   }}
                   className={cn(
@@ -235,7 +294,8 @@ export function PathWeight({
             if (e.key === "Enter" || e.key === "Escape") {
               if (e.key === "Enter") {
                 const n = parseInt(editVal, 10);
-                if (!isNaN(n) && n >= 0 && n <= 100) updatePathWeight(pathId, n);
+                if (!isNaN(n) && n >= 0 && n <= 100)
+                  updatePathWeight(pathId, n);
               }
               setEditing(false);
             }
@@ -257,17 +317,7 @@ export function PathWeight({
     );
   }
 
-  if (splitMode.kind === "rule-based") {
-    return (
-      <ConditionChip
-        pathId={pathId}
-        pathIndex={pathIndex}
-        pathCount={pathCount}
-      />
-    );
-  }
-
-  // AI mode
+  // AI mode: show mock AI-assigned weight
   const aiWeights = [32, 28, 24, 16];
   const trends = ["↑", "→", "→", "↓"];
   const aiWeight = aiWeights[pathIndex % aiWeights.length];
@@ -293,7 +343,10 @@ export function AiModeConfig() {
       <select
         value={splitMode.goal}
         onChange={(e) =>
-          setSplitMode({ ...splitMode, goal: e.target.value as "cr" | "epc" | "roi" })
+          setSplitMode({
+            ...splitMode,
+            goal: e.target.value as "cr" | "epc" | "roi",
+          })
         }
         className="rounded border border-border bg-surface-2 px-2 py-1 text-xs text-text"
       >
@@ -306,7 +359,10 @@ export function AiModeConfig() {
         type="number"
         value={splitMode.minSample}
         onChange={(e) =>
-          setSplitMode({ ...splitMode, minSample: parseInt(e.target.value, 10) || 100 })
+          setSplitMode({
+            ...splitMode,
+            minSample: parseInt(e.target.value, 10) || 100,
+          })
         }
         className="w-20 rounded border border-border bg-surface-2 px-2 py-1 text-xs font-mono text-text focus:outline-none focus:border-accent"
       />
