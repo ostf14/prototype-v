@@ -195,7 +195,7 @@ export function SummarySidebar({ draftLastSaved }: { draftLastSaved: number | nu
       : `AI · ${splitMode.goal?.toUpperCase() ?? "EPC"}`;
 
   const trackingUrl =
-    `https://${tracking.customDomain ?? "track.voluum.com"}/c/{clickid}` +
+    `https://${tracking.customDomain ?? "track.example.com"}/c/{clickid}` +
     (ts ? `?source=${encodeURIComponent(ts.name)}` : "");
 
   const autoSavedLabel = draftLastSaved

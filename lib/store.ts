@@ -413,7 +413,7 @@ export const useStore = create<Store>()(
       },
     }),
     {
-      name: "voluum-store",
+      name: "prototype-store",
       partialize: (state) => ({
         campaigns: state.campaigns,
         draft: state.draft,

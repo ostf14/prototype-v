@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(pnpm dlx *)",
-      "PowerShell(npm install -g pnpm 2>&1)",
-      "PowerShell($env:PATH = \"C:\\\\Users\\\\ostf1\\\\AppData\\\\Roaming\\\\npm;$env:PATH\"; pnpm --version 2>&1)"
-    ]
-  }
-}

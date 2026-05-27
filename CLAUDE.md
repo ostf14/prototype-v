@@ -6,9 +6,7 @@ This file is automatically read by Claude Code at the start of every session in 
 
 ## Project
 
-**Voluum Redesign** — interactive prototype of a unified campaign creation flow for a performance marketing tracker. This is a portfolio/interview piece. Visual polish and interaction quality matter as much as correctness. Pure frontend, no backend.
-
-The full design specification lives in `PROMPT.md`. Read it before making structural decisions.
+**Prototype V** — interactive prototype of a unified campaign creation flow for a performance marketing tracker. Visual polish and interaction quality matter as much as correctness. Pure frontend, no backend.
 
 ---
 
@@ -171,7 +169,7 @@ Never animate:
 
 - Realistic affiliate marketing names — no "Test Campaign 1", "Lorem Ipsum Offer"
 - Numbers that look real (e.g., 12,450 clicks, not 100)
-- Use the campaigns specified in `PROMPT.md` exactly — they're chosen to demo each unlock state
+- Use realistic campaigns that demo each unlock state of the destination canvas
 - Seed deterministically (no `Math.random()` at module load) so reload gives consistent state
 - Export from `lib/mock-data.ts` as named consts
 
@@ -191,7 +189,7 @@ Never animate:
 
 When asked to add or change something:
 
-1. **Read `PROMPT.md` if the change is structural** (new section, new flow state, new screen)
+1. **Re-read the relevant section here before making structural changes** (new section, new flow state, new screen)
 2. **Check `lib/types.ts`** — if the data shape doesn't support what you're building, extend types FIRST
 3. **Check existing components** — do not reinvent primitives. If `<Section>` exists, use it.
 4. **Match neighboring style** — if files nearby use a certain pattern (e.g., zustand selector style), follow it
@@ -270,5 +268,5 @@ When in doubt about visual or interaction patterns, mimic:
 
 Do not mimic:
 - Material Design
-- Anything from current Voluum (we're redesigning it)
+- The legacy product being redesigned
 - Bootstrap-era patterns (large modals, breadcrumbs, tabs everywhere)

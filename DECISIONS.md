@@ -4,7 +4,7 @@
 
 **Decision:** One form. Complexity reveals itself through user actions: paste a URL, click _Add lander_, click _Add path_, switch the Distribution dropdown. No top-level Simple/Advanced toggle.
 
-**Rationale:** Voluum today ships two separate forms ("Simple" and "Advanced") that confuse users. A mode switch perpetuates the split. Progressive disclosure keeps the muscle memory of the simple path intact while letting power users unlock layers in place.
+**Rationale:** The legacy product ships two separate forms ("Simple" and "Advanced") that confuse users. A mode switch perpetuates the split. Progressive disclosure keeps the muscle memory of the simple path intact while letting power users unlock layers in place.
 
 **Trade-off:** Slightly more state-management complexity in the canvas (the same component renders four very different layouts). Worth it for the UX.
 
@@ -82,9 +82,9 @@
 
 ## 2026-05-15 — Manual scaffold instead of create-next-app
 
-**Context:** `create-next-app` validates the folder name against npm package name rules. The working directory "Test Voluum" has spaces and capital letters, causing it to abort.
+**Context:** `create-next-app` validates the folder name against npm package name rules. The working directory name had spaces and capital letters, causing it to abort.
 
-**Decision:** Manually authored `package.json` (name: `voluum-redesign`), `tsconfig.json`, `next.config.ts`, and `postcss.config.mjs`.
+**Decision:** Manually authored `package.json` (name: `prototype-v`), `tsconfig.json`, `next.config.ts`, and `postcss.config.mjs`.
 
 **Rationale:** Gives full control over dependency versions and avoids hacks like a temporary directory + move. Tailwind v4 also requires manual setup anyway (`@tailwindcss/postcss` instead of a `tailwind.config.js`).
 
@@ -106,7 +106,7 @@
 
 **Decision:** Form state lives entirely in the zustand `draft` slice. Validation only on submit.
 
-**Rationale:** Per PROMPT.md and CLAUDE.md specifications. Schema-based validation would require re-defining the schema on every structural change.
+**Rationale:** The form's structural fluidity makes schema-based validation costly — rewriting the schema on every shape change isn't worth it for a prototype.
 
 ---
 

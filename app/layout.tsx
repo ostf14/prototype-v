@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voluum",
+  title: "Prototype V",
   description: "Performance marketing tracker",
 };
 
