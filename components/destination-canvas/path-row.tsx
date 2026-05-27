@@ -116,11 +116,7 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
           Scrolls together with the slot flow. */}
       {!isRuleBased && (
         <div className="ml-3 shrink-0 min-w-24 self-center">
-          <PathWeight
-            pathId={path.id}
-            pathIndex={index}
-            pathCount={pathCount}
-          />
+          <PathWeight pathId={path.id} pathIndex={index} />
         </div>
       )}
 

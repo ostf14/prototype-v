@@ -262,11 +262,9 @@ export function WeightBar() {
 export function PathWeight({
   pathId,
   pathIndex,
-  pathCount,
 }: {
   pathId: string;
   pathIndex: number;
-  pathCount: number;
 }) {
   const { draft, updatePathWeight } = useStore();
   const { splitMode } = draft;
