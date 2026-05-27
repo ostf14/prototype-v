@@ -107,7 +107,7 @@ export function GeneralSection() {
           {tsOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setTsOpen(false)} />
-              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface-2 py-1 shadow-lg max-h-80 overflow-y-auto">
+              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface py-1 shadow-lg max-h-80 overflow-y-auto">
                 {["social", "push", "native", "search", "pop"].map((cat) => {
                   const sources = trafficSources.filter((t) => t.category === cat);
                   if (sources.length === 0) return null;
@@ -123,7 +123,7 @@ export function GeneralSection() {
                             setDraft({ trafficSourceId: ts.id });
                             setTsOpen(false);
                           }}
-                          className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:bg-surface hover:text-text transition-colors"
+                          className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:bg-surface-2 hover:text-text transition-colors"
                         >
                           <span>{ts.icon}</span>
                           <span>{ts.name}</span>
@@ -162,7 +162,7 @@ export function GeneralSection() {
           {countryOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setCountryOpen(false)} />
-              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface-2 py-1 shadow-lg max-h-56 overflow-y-auto">
+              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface py-1 shadow-lg max-h-56 overflow-y-auto">
                 {COUNTRIES.map((country) => (
                   <button
                     key={country.code}
@@ -170,7 +170,7 @@ export function GeneralSection() {
                       setDraft({ country: country.code });
                       setCountryOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:bg-surface hover:text-text transition-colors"
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-text-muted hover:bg-surface-2 hover:text-text transition-colors"
                   >
                     <span>{country.flag}</span>
                     <span>{country.name}</span>
