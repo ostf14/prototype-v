@@ -105,7 +105,7 @@ function MiniFlowSvg() {
   );
 }
 
-type Warning = { message: string };
+type Warning = { message: string; target?: string };
 
 function computeWarnings(draft: DraftCampaign): Warning[] {
   const warnings: Warning[] = [];
@@ -114,16 +114,51 @@ function computeWarnings(draft: DraftCampaign): Warning[] {
     const offerSlot = path.slots.find((s) => s.kind === "offer");
     if (!offerSlot || offerSlot.items.length === 0) {
       const label = getPathLabel(i, pathCount, draft.splitMode);
-      warnings.push({ message: `${label} has no offer configured` });
+      warnings.push({
+        message: `${label} has no offer configured`,
+        target: `path-${path.id}-offer`,
+      });
     }
   });
   if (!draft.trafficSourceId) {
-    warnings.push({ message: "No traffic source selected" });
+    warnings.push({
+      message: "No traffic source selected",
+      target: "field-traffic-source",
+    });
   }
   if (!draft.name.trim()) {
-    warnings.push({ message: "Campaign name is empty" });
+    warnings.push({
+      message: "Campaign name is empty",
+      target: "field-name",
+    });
   }
   return warnings;
+}
+
+function jumpToTarget(target: string) {
+  const el = document.getElementById(target);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Briefly highlight the target with the warning color so the user
+  // sees what the issue refers to after the scroll lands.
+  el.classList.add(
+    "ring-2",
+    "ring-warning",
+    "ring-offset-2",
+    "ring-offset-bg"
+  );
+  window.setTimeout(() => {
+    el.classList.remove(
+      "ring-2",
+      "ring-warning",
+      "ring-offset-2",
+      "ring-offset-bg"
+    );
+  }, 1500);
+  // If the element is focusable (inputs, buttons), move focus to it too.
+  if (typeof (el as HTMLElement).focus === "function") {
+    (el as HTMLElement).focus({ preventScroll: true });
+  }
 }
 
 export function SummarySidebar({ draftLastSaved }: { draftLastSaved: number | null }) {
@@ -198,19 +233,39 @@ export function SummarySidebar({ draftLastSaved }: { draftLastSaved: number | nu
         </div>
       </div>
 
-      {/* Warnings */}
+      {/* Warnings — clickable when a target anchor exists, jumps to the
+          relevant form control and briefly rings it in the warning color. */}
       {warnings.length > 0 && (
         <div>
           <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-text-subtle">
             Issues
           </h3>
           <div className="flex flex-col gap-1.5">
-            {warnings.map((w, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <AlertTriangle size={12} className="shrink-0 text-warning mt-0.5" />
-                <span className="text-xs text-text-muted">{w.message}</span>
-              </div>
-            ))}
+            {warnings.map((w, i) =>
+              w.target ? (
+                <button
+                  key={i}
+                  onClick={() => jumpToTarget(w.target!)}
+                  className="flex items-start gap-2 text-left hover:bg-surface-2 rounded px-1 -mx-1 py-0.5 transition-colors group"
+                >
+                  <AlertTriangle
+                    size={12}
+                    className="shrink-0 text-warning mt-0.5"
+                  />
+                  <span className="text-xs text-text-muted group-hover:text-text transition-colors">
+                    {w.message}
+                  </span>
+                </button>
+              ) : (
+                <div key={i} className="flex items-start gap-2 px-1">
+                  <AlertTriangle
+                    size={12}
+                    className="shrink-0 text-warning mt-0.5"
+                  />
+                  <span className="text-xs text-text-muted">{w.message}</span>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}

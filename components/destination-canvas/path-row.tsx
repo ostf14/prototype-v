@@ -105,7 +105,10 @@ export function PathRow({ path, index, pathCount, showRemove }: PathRowProps) {
         )}
 
         {offerSlot && (
-          <SlotCard pathId={path.id} slot={offerSlot} showRemoveItem />
+          // id anchor — Issues panel links here when "{path} has no offer".
+          <div id={`path-${path.id}-offer`} className="rounded-md">
+            <SlotCard pathId={path.id} slot={offerSlot} showRemoveItem />
+          </div>
         )}
       </div>
 

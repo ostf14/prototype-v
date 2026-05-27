@@ -71,6 +71,7 @@ export function GeneralSection() {
       {/* Campaign name */}
       <FormRow label="Name">
         <input
+          id="field-name"
           type="text"
           value={draft.name}
           onChange={(e) => setDraft({ name: e.target.value })}
@@ -87,6 +88,7 @@ export function GeneralSection() {
       <FormRow label="Traffic source">
         <div className="relative">
           <button
+            id="field-traffic-source"
             onClick={() => setTsOpen((p) => !p)}
             className={cn(
               "flex w-full items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5",
