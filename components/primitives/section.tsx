@@ -26,10 +26,15 @@ export function Section({
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={cn("border border-border rounded-md overflow-hidden", className)}>
+    // No `overflow-hidden` on the root — that would clip popovers (e.g.
+    // dropdowns inside a FormRow) at the section's bottom edge. Instead,
+    // the header and body each carry the rounded corners they need so
+    // their backgrounds align with the rounded outer border.
+    <div className={cn("border border-border rounded-md", className)}>
       <div
         className={cn(
-          "flex items-center gap-2 px-4 py-3 bg-surface",
+          "flex items-center gap-2 px-4 py-3 bg-surface rounded-t-md",
+          !expanded && "rounded-b-md",
           collapsible && "cursor-pointer hover:bg-surface-2 transition-colors"
         )}
         onClick={collapsible ? () => setExpanded((p) => !p) : undefined}
@@ -50,7 +55,9 @@ export function Section({
         )}
       </div>
       {expanded && (
-        <div className="bg-bg border-t border-border">{children}</div>
+        <div className="bg-bg border-t border-border rounded-b-md">
+          {children}
+        </div>
       )}
     </div>
   );
