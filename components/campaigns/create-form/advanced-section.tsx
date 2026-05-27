@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Section } from "@/components/primitives/section";
 import { cn } from "@/lib/utils";
 
@@ -12,28 +13,48 @@ function AdvancedRow({ label, children }: { label: string; children: React.React
   );
 }
 
-function Toggle({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
+function Toggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (next: boolean) => void;
+}) {
   return (
-    <div className="flex items-center gap-2">
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className="flex items-center gap-2"
+    >
       <div
         className={cn(
-          "relative w-8 h-4.5 rounded-full transition-colors cursor-pointer",
-          defaultChecked ? "bg-accent/30" : "bg-surface-2"
+          "relative w-8 h-4.5 rounded-full transition-colors",
+          checked ? "bg-accent/30" : "bg-surface-2"
         )}
       >
         <div
           className={cn(
             "absolute top-0.5 w-3.5 h-3.5 rounded-full bg-text-subtle transition-transform",
-            defaultChecked ? "translate-x-3.5" : "translate-x-0.5"
+            checked ? "translate-x-3.5" : "translate-x-0.5"
           )}
         />
       </div>
       <span className="text-sm text-text-muted">{label}</span>
-    </div>
+    </button>
   );
 }
 
 export function AdvancedSection() {
+  // Local state — these flags aren't reflected in the live summary sidebar
+  // today, so promoting them to the draft store isn't required. If summary
+  // surfaces them later, lift to zustand draft slice.
+  const [filterBots, setFilterBots] = useState(false);
+  const [antiFraud, setAntiFraud] = useState(false);
+
   return (
     <Section
       title="Advanced"
@@ -47,10 +68,18 @@ export function AdvancedSection() {
     >
       <div>
         <AdvancedRow label="Bot filtering">
-          <Toggle label="Filter bot traffic" />
+          <Toggle
+            label="Filter bot traffic"
+            checked={filterBots}
+            onChange={setFilterBots}
+          />
         </AdvancedRow>
         <AdvancedRow label="Anti-fraud">
-          <Toggle label="Enable anti-fraud protection" />
+          <Toggle
+            label="Enable anti-fraud protection"
+            checked={antiFraud}
+            onChange={setAntiFraud}
+          />
         </AdvancedRow>
         <AdvancedRow label="IP blocking">
           <textarea

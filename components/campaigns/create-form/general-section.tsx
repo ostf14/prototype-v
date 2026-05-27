@@ -107,7 +107,7 @@ export function GeneralSection() {
           {tsOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setTsOpen(false)} />
-              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface-2 py-1 shadow-lg">
+              <div className="absolute top-full mt-1 z-50 w-full rounded-md border border-border bg-surface-2 py-1 shadow-lg max-h-80 overflow-y-auto">
                 {["social", "push", "native", "search", "pop"].map((cat) => {
                   const sources = trafficSources.filter((t) => t.category === cat);
                   if (sources.length === 0) return null;
