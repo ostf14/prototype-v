@@ -47,5 +47,5 @@ Open <http://localhost:3000>. Lands on `/campaigns`.
 ## Known limitations
 
 - The sticky bottom action bar in the create form uses a fixed `left-60` offset to clear the sidebar. Collapsing the sidebar doesn't reflow it.
-- `Filter bot traffic` and `Enable anti-fraud protection` toggles use local component state — they don't round-trip through the draft store or the summary sidebar.
+- `Filter bot traffic` and `Enable anti-fraud protection` toggles operate on local component state only — they don't round-trip through the draft store or the summary sidebar. Wiring is straightforward; the simplification was deliberate for prototype scope.
 - pnpm 11 occasionally prompts for build-script approval on `sharp` / `unrs-resolver`. If install stalls, run `pnpm approve-builds` once, or fall back to `npm install`.
