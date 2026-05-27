@@ -38,8 +38,10 @@ function Toggle({
       >
         <div
           className={cn(
-            "absolute top-0.5 w-3.5 h-3.5 rounded-full bg-text-subtle transition-transform",
-            checked ? "translate-x-3.5" : "translate-x-0.5"
+            "absolute top-0.5 w-3.5 h-3.5 rounded-full transition-all",
+            checked
+              ? "bg-accent translate-x-3.5"
+              : "bg-text-subtle translate-x-0.5"
           )}
         />
       </div>
