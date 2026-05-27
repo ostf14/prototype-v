@@ -38,8 +38,7 @@
     "zustand": "^5.0.5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [],
-    "neverBuiltDependencies": ["sharp", "unrs-resolver"]
+    "onlyBuiltDependencies": ["sharp", "unrs-resolver"]
   },
   "devDependencies": {
     "@types/node": "^20",
