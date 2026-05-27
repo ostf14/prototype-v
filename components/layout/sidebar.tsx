@@ -43,7 +43,7 @@ export function Sidebar() {
       <div className="flex h-12 items-center border-b border-border px-4">
         {!collapsed && (
           <span className="text-sm font-medium tracking-tight text-text">
-            Voluum
+            Prototype V
           </span>
         )}
         {collapsed && (
