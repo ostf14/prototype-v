@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,26 @@ export function ConditionGate({
     useState<"is" | "is-not" | "in" | "contains">("is");
   const [value, setValue] = useState("");
 
+  // Portal-positioned popover: mounted flag for SSR-safe createPortal,
+  // triggerRef + popoverPos to anchor the floating panel to the button.
+  const [mounted, setMounted] = useState(false);
+  const [popoverPos, setPopoverPos] = useState<
+    { top: number; left: number } | null
+  >(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const openPopover = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPopoverPos({ top: rect.bottom + 4, left: rect.left });
+    }
+    setPopoverOpen((p) => !p);
+  };
+
   const isFallback = pathIndex === pathCount - 1;
   const rules =
     draft.splitMode.kind === "rule-based" ? draft.splitMode.rules : [];
@@ -97,7 +118,8 @@ export function ConditionGate({
 
         {/* Add condition trigger */}
         <button
-          onClick={() => setPopoverOpen((p) => !p)}
+          ref={triggerRef}
+          onClick={openPopover}
           className="flex items-center gap-1 rounded border border-dashed border-border px-2 py-0.5 text-xs text-text-subtle hover:border-border-strong hover:text-text-muted transition-colors w-fit"
         >
           <Plus size={10} />
@@ -105,14 +127,22 @@ export function ConditionGate({
         </button>
       </div>
 
-      {/* Condition builder popover */}
-      {popoverOpen && (
+      {/* Condition builder popover — portaled to document.body so it
+          escapes the PathRow's stacking context. The parent PathRow uses
+          framer-motion `layout`, which applies transform during/after
+          animations; transformed ancestors trap fixed/absolute children
+          regardless of z-index, so siblings (e.g. ELSE row) would render
+          on top of an in-tree popover. Portal sidesteps this entirely. */}
+      {mounted && popoverOpen && popoverPos && createPortal(
         <>
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[60]"
             onClick={() => setPopoverOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-1 z-50 w-72 rounded-md border border-border bg-surface-2 p-3 shadow-lg">
+          <div
+            className="fixed z-[70] w-72 rounded-md border border-border bg-surface-2 p-3 shadow-lg"
+            style={{ top: popoverPos.top, left: popoverPos.left }}
+          >
             <div className="flex flex-col gap-2">
               <div className="text-xs font-medium text-text-subtle">
                 Add condition
@@ -178,7 +208,8 @@ export function ConditionGate({
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );
